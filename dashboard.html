@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-bar w3-top w3-white w3-large" style="z-index:4">
+    <span class="w3-bar-item w3-right"><img src="HP-logo.png" style="width:70px"> </span>
+  <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i>  Menu</button>
+    <h1 style="margin-left:20px; color:RGB(0,149,217);">HP DocuClass™</h1>
+</div>
+
+<div>
+  <h1>1</h1>
+</div>
+
+<!-- Sidebar/menu -->
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container w3-row">
+    <div class="w3-col s4">
+      <img src="lawyer.png" class="w3-circle w3-margin-right" style="width:46px">
+    </div>
+    <div class="w3-col s8 w3-bar">
+      <span>Welcome, <strong>Mike</strong></span><br>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
+      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
+    </div>
+  </div>
+  <hr>
+  <div class="w3-container">
+
+    <h5>Dashboard</h5>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Cases</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-bank fa-fw"></i>  Document Manager</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>  Overview</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>
+  </div>
+</nav>
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:23px;">
+
+  <!-- Header -->
+  <header class="w3-container" style="padding-top:22px">
+    <h2><b><i class="fa fa-dashboard"></i> Document Classification</b></h2>
+  </header>
+  <div class="w3-panel">
+    <div class="w3-row-padding" style="margin:0 -16px">
+      <div class="w3-half">
+        <h5><?php
+
+// NOTE: Be sure to uncomment the following line in your php.ini file.
+// ;extension=php_openssl.dll
+
+// **********************************************
+// *** Update or verify the following values. ***
+// **********************************************
+
+// Replace the accessKey string value with your valid access key.
+$accessKey = '6b2dffb76b0c484b87925f3a89372dc9';
+
+// Replace or verify the region.
+
+// You must use the same region in your REST API call as you used to obtain your access keys.
+// For example, if you obtained your access keys from the westus region, replace 
+// "westcentralus" in the URI below with "westus".
+
+// NOTE: Free trial access keys are generated in the westcentralus region, so if you are using
+// a free trial access key, you should not need to change this region.
+$host = 'https://eastus.api.cognitive.microsoft.com';
+$path = '/text/analytics/v2.0/keyPhrases';
+
+function GetKeyPhrases ($host, $path, $key, $data) {
+
+	$headers = "Content-type: text/json\r\n" .
+		"Ocp-Apim-Subscription-Key: $key\r\n";
+
+	$data = json_encode ($data);
+
+	// NOTE: Use the key 'http' even if you are making an HTTPS request. See:
+	// https://php.net/manual/en/function.stream-context-create.php
+	$options = array (
+		'http' => array (
+			'header' => $headers,
+			'method' => 'POST',
+			'content' => $data
+		)
+	);
+	$context  = stream_context_create ($options);
+	$result = file_get_contents ($host . $path, false, $context);
+	return $result;
+}
+
+$data = array (
+	'documents' => array (
+		array ( 'id' => '1', 'language' => 'en', 'text' => 'I really enjoy the new XBox One S. It has a clean look, it has 4K/HDR resolution and it is affordable.' ),
+		array ( 'id' => '2', 'language' => 'es', 'text' => 'Si usted quiere comunicarse con Carlos, usted debe de llamarlo a su telefono movil. Carlos es muy responsable, pero necesita recibir una notificacion si hay algun problema.' ),
+		array ( 'id' => '3', 'language' => 'en', 'text' => 'The Grand Hotel is a new hotel in the center of Seattle. It earned 5 stars in my review, and has the classiest decor I\'ve ever seen.' )
+	)
+);
+
+print "Please wait a moment for the results to appear.";
+
+$result = GetKeyPhrases ($host, $path, $accessKey, $data);
+
+echo json_encode (json_decode ($result), JSON_PRETTY_PRINT);
+?>
+
+</h5>
+          </div>
+     
+        
+      
+
+      <div class="w3-half">
+        <table class="w3-table w3-striped w3-white">
+  <h5>Classification </h5>
+          <tr>
+            <td><i class="fa w3-text-blue w3-large"></i></td>
+            <td>
+        <h5>Corporate Lease Agreements 2012-2013 </h5>
+        <h6>(Confidence: 98%)</h6>
+        <h6 style="color:darkred"> ** contains potentially sensitive information ** </h6>
+      </td>
+      </tr>
+      </table>
+
+      </div>
+
+      <div>
+      <center>
+        <h2 style="color:rgb(0,150,214)">Is this correct?</h2>
+
+
+      <button class="w3-button w3-blue"> Yes <i class="fa fa-arrow-right"></i> </button>
+      <button class="w3-button w3-blue"> No  <i class="fa fa-arrow-right"></i></button>
+      </center>
+      </div>
+
+
+      <div class="w3-half">
+        <h5>Key Items </h5>
+        <table class="w3-table w3-striped w3-white">
+
+          <tr>
+            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+            <td>Commercial Lease Agreement</td>
+            <td><i>1</i></td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+            <td>Frontage Road Commercial Properties, LLC </td>
+            <td><i>2</i></td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+            <td> Montana State University</td>
+            <td><i>3</i></td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+            <td> January 31, 2012</td>
+            <td><i>4</i></td>
+          </tr>
+          <tr>
+            <td><i class="fa fa-bookmark w3-text-blue w3-large"></i></td>
+            <td>607 Triple Tree Road, Bozeman, Montana</td>
+            <td><i>5</i></td>
+          </tr>
+          <tr>
+            <td><i class="fa w3-text-blue w3-large"></i></td>
+            <td> <i>Add Key Items... </i></td>
+            <td><i></i></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="w3-container">
+    <h5>Predicted Document</h5>
+    <p>Corporate Lease Agreements</p>
+    <div class="w3-grey">
+      <div class="w3-container w3-center w3-padding w3-green" style="width:98%">98% </div>
+    </div>
+
+    <p>Residential Lease Agreements</p>
+    <div class="w3-grey">
+      <div class="w3-container w3-center w3-padding w3-orange" style="width:66%">66%</div>
+    </div>
+
+    <p>Corporate Eviction Notice</p>
+    <div class="w3-grey">
+      <div class="w3-container w3-center w3-padding w3-red" style="width:63%">63%</div>
+    </div>
+  </div>
+  <hr>
+
+  <hr>
+  <hr>
+
+  <br>
+  <div class="w3-container w3-dark-grey w3-padding-32">
+    <div class="w3-row">
+      <div class="w3-container w3-third">
+        <h5 class="w3-bottombar w3-border-green">User </h5>
+        <p>Profile</p>
+        <p>Billing</p>
+        <p>Settings</p>
+      </div>
+      <div class="w3-container w3-third">
+        <h5 class="w3-bottombar w3-border-red">System</h5>
+        <p>User Manual</p>
+        <p>Usage Dashboard</p>
+        <p>More</p>
+      </div>
+      <div class="w3-container w3-third">
+        <h5 class="w3-bottombar w3-border-orange">Support</h5>
+        <p>Contact Us</p>
+        <p>Telephone</p>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w3-container w3-padding-16 w3-light-grey">
+    <h5>HP DocuClass™  |  Copyright 2019   |   Palo Alto, California </h5>
+    <p>Powered by Microsoft Azure <a href="https://www.w3schools.com/w3css/default.asp" target="_blank"></a></p>
+  </footer>
+
+  <!-- End page content -->
+</div>
+
+<script>
+// Get the Sidebar
+var mySidebar = document.getElementById("mySidebar");
+
+// Get the DIV with overlay effect
+var overlayBg = document.getElementById("myOverlay");
+
+// Toggle between showing and hiding the sidebar, and add overlay effect
+function w3_open() {
+  if (mySidebar.style.display === 'block') {
+    mySidebar.style.display = 'none';
+    overlayBg.style.display = "none";
+  } else {
+    mySidebar.style.display = 'block';
+    overlayBg.style.display = "block";
+  }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+  mySidebar.style.display = "none";
+  overlayBg.style.display = "none";
+}
+</script>
+
+</body>
+</html>
